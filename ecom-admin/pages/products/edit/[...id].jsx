@@ -14,6 +14,7 @@ const EditProductPage = () => {
       setProductInfo(response.data);
     });
   }, [id]);
+  console.log(productInfo);
   return (
     <Layout>
       <h1>Edit Product</h1>

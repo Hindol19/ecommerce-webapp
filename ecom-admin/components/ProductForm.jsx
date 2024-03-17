@@ -2,32 +2,35 @@ import React from "react";
 import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
+import Image from "next/image";
 
 const ProductForm = ({
   _id,
   title: existingTitle,
   description: existingDescription,
   price: existingPrice,
-  images,
+  buf: existingImage,
 }) => {
   const [title, setTitle] = useState(existingTitle || "");
   const [description, setDescription] = useState(existingDescription || "");
   const [price, setPrice] = useState(existingPrice || "");
-  // const [img, setImg] = useState(null);
+  const [images, setImages] = useState({ myFile: existingImage || "" });
   const [goToProducts, setGoToProducts] = useState(false);
   const router = useRouter();
 
+  // console.log(images);
   // console.log(title, description, price);
 
   async function saveProduct(ev) {
     ev.preventDefault();
-    const data = { title, description, price };
+    const buf = images.myFile;
+    const data = { title, description, price, buf };
+    // console.log(data);
     if (_id) {
       //update
       await axios.put("/api/products", { ...data, _id });
     } else {
       //create
-
       await axios.post("/api/products", data);
     }
     setGoToProducts(true);
@@ -35,26 +38,25 @@ const ProductForm = ({
   if (goToProducts) {
     router.push("/products");
   }
-  const uploadImage = async (ev) => {
-    const files = ev.target?.files;
-    if (files?.length > 0) {
-      const data = new FormData();
-      for (const file of files) {
-        data.append("file", file);
-      }
-      try {
-        // console.log(data);
-        await axios.post("/api/upload", data, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-        // console.log(res);
-      } catch (error) {
-        console.error("Error uploading image:", error);
-      }
-    }
-  };
 
-  const uploadImage2 = () => {};
+  function convertToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(file);
+      fileReader.onload = () => {
+        resolve(fileReader.result);
+      };
+      fileReader.onerror = (error) => {
+        reject(error);
+      };
+    });
+  }
+  const uploadImage2 = async (ev) => {
+    const file = ev.target?.files[0];
+    const base64 = await convertToBase64(file);
+    // console.log(base64);
+    setImages({ ...images, myFile: base64 });
+  };
   return (
     <form onSubmit={saveProduct}>
       {/* ..................................................................... */}
@@ -69,7 +71,11 @@ const ProductForm = ({
       <label>Photos</label>
       <div className="mb-2">
         <label className="w-24 h-24 border border-primary bg-primary bg-opacity-20 text-center rounded-lg flex justify-center items-center">
-          <div>Upload</div>
+          {images.myFile ? (
+            <Image src={images.myFile} alt="/" width="100" height="100" />
+          ) : (
+            <div>Upload</div>
+          )}
           <input onChange={uploadImage2} type="file" className="hidden" />
         </label>
         {!images?.length && <div>No photos in this product</div>}

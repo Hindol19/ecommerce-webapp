@@ -5,6 +5,7 @@ import { Product } from "@/models/Product";
 
 export default async function handle(req, res) {
   const { method } = req;
+
   await mongooseConnect();
 
   if (method === "GET") {
@@ -16,18 +17,20 @@ export default async function handle(req, res) {
   }
 
   if (method === "POST") {
-    const { title, description, price, img } = req.body;
+    const { title, description, price, buf } = req.body;
     const productDoc = await Product.create({
       title,
       description,
       price,
+      buf,
     });
+
     res.json(productDoc);
   }
 
   if (method === "PUT") {
-    const { title, description, price, _id } = req.body;
-    await Product.updateOne({ _id }, { title, description, price });
+    const { title, description, price, buf, _id } = req.body;
+    await Product.updateOne({ _id }, { title, description, price, buf });
     res.json(true);
   }
 
