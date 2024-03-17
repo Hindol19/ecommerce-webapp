@@ -1,0 +1,34 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+input,
+textarea {
+  @apply border-2 border-gray-300 rounded-md px-1 w-full;
+  @apply mb-2;
+}
+input:focus,
+textarea:focus {
+  @apply border-dark;
+}
+h1 {
+  @apply text-dark mb-2 text-xl;
+}
+label {
+  @apply text-dark;
+}
+.btn-primary {
+  @apply bg-dark text-light px-4 py-1 rounded-md;
+}
+table.basic {
+  @apply w-full;
+}
+table.basic thead tr td {
+  @apply bg-black bg-opacity-10;
+}
+table.basic tr td {
+  @apply border border-black border-opacity-10 p-1;
+}
+table.basic a {
+  @apply bg-primary text-light text-sm py-1 px-2 rounded-md flex gap-1;
+}
